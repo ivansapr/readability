@@ -1,0 +1,48 @@
+{
+    "sites": [{
+            "site": "lenta.ru",
+            "search_pattern": {
+                "title_search": {
+                    "itemprop": "headline"
+                },
+                "body_search": {
+                    "itemprop": "articleBody"
+                }
+            }
+        },
+        {
+            "site": "meduza.io",
+            "search_pattern": {
+                "title_search": {
+                    "name": "h1",
+                    "class": "RichTitle-root"
+                },
+                "body_search": {
+                    "name":"div",
+                    "class": "GeneralMaterial-article"
+                }
+            }
+        },
+        {
+            "site": "dtf.ru",
+            "search_pattern": {
+                "title_search": {
+                    "itemprop": "headline"
+                },
+                "body_search": {
+                    "name":"div",
+                    "class": "b-article"
+                }
+            }
+        }
+    ],
+    "default": {
+        "title_search": {
+            "name": "p"
+        },
+        "body_search": {
+            "name": "h1"
+        }
+    }
+
+}
