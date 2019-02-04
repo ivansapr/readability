@@ -11,14 +11,14 @@ from bs4 import BeautifulSoup, element
 class Parse:
 
     CONFIG_PATH = '{}{}'.format(
-                        config=os.path.dirname(os.path.abspath(__file__)),
+                        os.path.dirname(os.path.abspath(__file__)),
                         '/config.json')
     LINE_WIDTH = 80
 
-    def __init__(self, url, self.CONFIG_PATH):
+    def __init__(self, url, config=CONFIG_PATH):
 
         self.url = urlparse(url)
-        self.domain = url.netloc
+        self.domain = self.url.netloc
         self.alowed_tags = ['p', 'a', 'b', 'i', 'ul', 'li', 'span']
 
         self.default = {
@@ -40,7 +40,7 @@ class Parse:
 
     def get_post(self):
 
-        page = requests.get(self.url.geturl)
+        page = requests.get(self.url.geturl())
         if page.status_code != 200:
             raise ValueError('Страница не загружается')
 
@@ -101,7 +101,8 @@ class Parse:
                 else:
                     headlines.append('')
                     search = False
-#       Если текста в блоке больше по медиане то вероятней всего это статья, а не другие блоки
+#       Если текста в блоке больше по медиане то вероятней всего это статья,
+#          а не другие блоки
         body = [p for idx, p in enumerate(containers)
                 if len(p.get_text(strip=True)) > 120 and headlines[idx]]
 
@@ -114,7 +115,9 @@ class Parse:
 #   Сохраняет линии в файл
     def save_post(self, lines, filename=None):
         if filename is None:
-            filename = os.getcwd()+'\\'+self.url_to_filename(self.url.geturl)
+            filename = '{}\\{}'.format(os.getcwd(),
+                                       self.url_to_filename(self.url)
+                                       )
             directory, file = os.path.split(filename)
             os.makedirs(directory, exist_ok=True)
 
@@ -122,27 +125,31 @@ class Parse:
             for line in lines:
                 if line['tag'] == 'p':
                     file.write(textwrap.fill(
-                        line['line'], width=self.default['line_width']))
+                        line['line'], width=self.LINE_WIDTH))
                     file.write("\n\n")
                 if line['tag'] == 'h':
                     file.write(textwrap.fill(
-                        line['line'], width=self.default['line_width']))
+                        line['line'], width=self.LINE_WIDTH))
                     file.write("\n\n")
                 if line['tag'] == 'li':
                     file.write(textwrap.fill(
-                        line['line'], width=self.default['line_width']))
+                        line['line'], width=self.LINE_WIDTH))
                     file.write("\n")
                 if line['tag'] == 'blackquote':
                     file.write(textwrap.fill(
-                        line['line'], width=self.default['line_width']))
+                        line['line'], width=self.LINE_WIDTH))
                     file.write("\n\n")
 
         print('Новость сохранена в {}'.format(filename))
 
 #   преобразует URL в путь к файлу
     def url_to_filename(self, url, extension='txt'):
-        path = urlparse(url)
-        return '{}{}.{}'.format(path.netloc, path.path, extension).replace('/', '\\')
+        # path = urlparse(url)
+        return '{}{}.{}'.format(
+                                url.netloc,
+                                url.path,
+                                extension
+                            ).replace('/', '\\')
 
 
 #    форматирует текст для записи в файл
